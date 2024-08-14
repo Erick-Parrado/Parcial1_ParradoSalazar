@@ -1,0 +1,22 @@
+@startuml 
+
+database DB [
+    MySql
+]
+
+card "Servidor de aplicacion" as AS {
+    rectangle "Clients CRUD" as CCRUD
+}
+
+card LS[
+    Servidor local
+]
+
+card EO[
+    Equipos de la organizacion
+]
+
+DB --> AS
+AS --> LS
+LS --> EO
+@enduml

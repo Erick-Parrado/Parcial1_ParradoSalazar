@@ -7,6 +7,10 @@
         - lastname: string
         --
         + makeAnOrder():void
+        + crearClient(): void
+        + readClient(): void
+        + updateClient(): void
+        + deleteClient():void
     }
 
     class "Product" as P{
