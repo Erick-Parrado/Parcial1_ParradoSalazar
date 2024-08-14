@@ -1,0 +1,6 @@
+@startuml
+    component Index[]
+    component ClientForm[]
+
+    Index <-- ClientForm
+@enduml
