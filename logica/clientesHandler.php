@@ -1,52 +1,43 @@
 <?php
-require_once 'ClientesLogic.php'; // Incluye la lógica
+require_once 'ClientesLogic.php'; // Incluye la lógica de negocio
 
-$clientesLogic = new ClientesLogic();
 header('Content-Type: application/json');
 
-// Leer todos los clientes
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'readAll') {
-    $clientes = $clientesLogic->getAllClientes();
-    echo json_encode($clientes);
-    exit;
-}
+$clientesLogic = new ClientesLogic();
+$action = $_REQUEST['action'] ?? '';
 
-// Crear o actualizar un cliente
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
-
-    if (isset($data['id']) && !empty($data['id'])) {
-        // Actualizar cliente
-        $clientesLogic->updateCliente($data['id'], $data['name'], $data['lastname']);
-        echo json_encode(['message' => 'Cliente actualizado exitosamente']);
-    } else {
-        // Crear cliente
+switch ($action) {
+    case 'create':
+        $data = json_decode(file_get_contents('php://input'), true);
         $id = $clientesLogic->createCliente($data['name'], $data['lastname']);
-        echo json_encode(['message' => 'Cliente creado exitosamente', 'id' => $id]);
-    }
-    exit;
-}
+        echo json_encode(['message' => 'Cliente creado con éxito', 'id' => $id]);
+        break;
 
-// Eliminar un cliente
-if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-    $data = json_decode(file_get_contents('php://input'), true);
-    if (isset($data['id'])) {
-        $clientesLogic->deleteCliente($data['id']);
-        echo json_encode(['message' => 'Cliente eliminado exitosamente']);
-    } else {
-        echo json_encode(['error' => 'ID no proporcionado']);
-    }
-    exit;
-}
-
-// Leer un cliente específico
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'read' && isset($_GET['id'])) {
-    $cliente = $clientesLogic->getClienteById($_GET['id']);
-    if ($cliente) {
+    case 'read':
+        $id = $_GET['id'] ?? 0;
+        $cliente = $clientesLogic->getClienteById($id);
         echo json_encode($cliente);
-    } else {
-        echo json_encode(['error' => 'Cliente no encontrado']);
-    }
-    exit;
+        break;
+
+    case 'readAll':
+        $clientes = $clientesLogic->getAllClientes();
+        echo json_encode($clientes);
+        break;
+
+    case 'update':
+        $data = json_decode(file_get_contents('php://input'), true);
+        $success = $clientesLogic->updateCliente($data['id'], $data['name'], $data['lastname']);
+        echo json_encode(['message' => $success ? 'Cliente actualizado con éxito' : 'Error al actualizar cliente']);
+        break;
+
+    case 'delete':
+        $data = json_decode(file_get_contents('php://input'), true);
+        $success = $clientesLogic->deleteCliente($data['id']);
+        echo json_encode(['message' => $success ? 'Cliente eliminado con éxito' : 'Error al eliminar cliente']);
+        break;
+
+    default:
+        echo json_encode(['message' => 'Acción no válida']);
+        break;
 }
 ?>

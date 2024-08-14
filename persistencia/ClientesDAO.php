@@ -10,9 +10,9 @@ class ClientesDAO {
 
     // Crear un nuevo cliente
     public function createClient($name, $lastname) {
-        $sql = "INSERT INTO clientes (name, lastname) VALUES (:name, :lastname)";
+        $sql = "INSERT INTO clientes (nombreCliente, apellidoCliente) VALUES (:name, :lastname)";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':nombreCliente', $name);
+        $stmt->bindParam(':name', $name);
         $stmt->bindParam(':lastname', $lastname);
         $stmt->execute();
         return $this->pdo->lastInsertId();
@@ -36,7 +36,7 @@ class ClientesDAO {
 
     // Actualizar un cliente existente
     public function updateClient($id, $name, $lastname) {
-        $sql = "UPDATE clientes SET name = :name, lastname = :lastname WHERE idCliente = :idCliente";
+        $sql = "UPDATE clientes SET nombreCliente = :name, apellidoCliente = :lastname WHERE idCliente = :idCliente";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':idCliente', $id, PDO::PARAM_INT);
         $stmt->bindParam(':name', $name);
