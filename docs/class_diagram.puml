@@ -1,0 +1,48 @@
+@startuml class_diagram
+    skinparam linetype ortho
+
+    class "Client" as C{
+        - id: int 
+        - name: string
+        - lastname: string
+        --
+        + makeAnOrder():void
+    }
+
+    class "Product" as P{
+        - id: int 
+        ~ name: string
+        - stock: int
+        --
+        + thereIsStock():boolean
+        + takeOutOne(): boolean
+        + takeOutSeveral(int amount):boolean
+    }
+
+    class "OrderItem"  as OI{
+        - id: int
+        - name: string
+        - unitPrice: float
+        - amount: int
+        --
+        + takeOutOne(): boolean
+        + takeOutSeveral(int amount):boolean
+    }
+
+    class "Order" as O{
+        - id: int 
+        - client: Client
+        - date: Date
+        - type: string
+        - items: OrderItems[]
+        --
+        + addItem(product Product,amount int, price float)
+        + quitItem(id int)
+    }
+
+    C --> O
+    O *-right- OI
+    OI <|-up- P
+
+
+@enduml
