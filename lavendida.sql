@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 14-08-2024 a las 16:18:32
+-- Tiempo de generación: 14-08-2024 a las 16:40:36
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -22,6 +22,28 @@ USE lavendida;
 --
 -- Base de datos: `lavendida`
 --
+
+DELIMITER $$
+--
+-- Procedimientos
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `consultarPedidos` (`idCliente` INT)   BEGIN
+SELECT c.idCliente, c.nombreCliente, c.apellidoCliente, pc.idPedido 
+FROM clientes c 
+INNER JOIN 
+(
+    SELECT pc.idPedido, SUM(dp.cantidad * dp.precioVentaUnitario) AS total
+    FROM pedidos_clientes pc
+    LEFT JOIN detalle_pedidos dp
+    ON pc.idPedido = dp.idPedido
+    WHERE pc.idCliente = idCliente
+    GROUP BY pc.idPedido
+) pc
+ON c.idCliente = pc.idCliente
+WHERE c.idCliente = idCliente;
+END$$
+
+DELIMITER ;
 
 -- --------------------------------------------------------
 

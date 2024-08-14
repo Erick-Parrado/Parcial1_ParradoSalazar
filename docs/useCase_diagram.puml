@@ -1,0 +1,18 @@
+@startuml 
+left to right direction
+
+actor Administrador as A
+
+rectangle ClientCRUD{
+    usecase "RF001 - Ingresar cliente" as RF001
+    usecase "RF002 - Editar cliente" as RF002
+    usecase "RF003 - Visualizar clientes" as RF003
+    usecase "RF004 - Eliminar cliente" as RF004
+}
+
+A --> RF001
+A --> RF002
+A --> RF003
+A --> RF004
+
+@enduml
