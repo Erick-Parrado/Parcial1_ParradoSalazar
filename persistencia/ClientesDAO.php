@@ -1,45 +1,55 @@
 <?php
-require_once 'ClientesDAO.php'; // Incluye la clase DAO
-require_once 'ClientesDTO.php'; // Incluye la clase DTO
+require_once 'Connection.php'; // Incluye la clase Connection
 
-class ClientesLogic {
-    private $clientesDAO;
+class ClientesDAO {
+    private $pdo;
 
     public function __construct() {
-        $this->clientesDAO = new ClientesDAO();
+        $this->pdo = Connection::getInstance()->getPDO();
     }
 
-    // Crear un cliente
-    public function createCliente($name, $lastname) {
-        $id = $this->clientesDAO->createClient($name, $lastname);
-        return $id;
+    // Crear un nuevo cliente
+    public function createClient($name, $lastname) {
+        $sql = "INSERT INTO clientes (name, lastname) VALUES (:name, :lastname)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':nombreCliente', $name);
+        $stmt->bindParam(':lastname', $lastname);
+        $stmt->execute();
+        return $this->pdo->lastInsertId();
     }
 
-    // Leer un cliente por ID
-    public function getClienteById($id) {
-        $clienteData = $this->clientesDAO->readClient($id);
-        if ($clienteData) {
-            return $this->mapToDTO($clienteData);
-        } else {
-            return null;
-        }
+    // Leer un cliente específico por ID
+    public function readClient($id) {
+        $sql = "SELECT * FROM clientes WHERE idCliente = :idCliente";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':idCliente', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     // Leer todos los clientes
-    public function getAllClientes() {
-        $clientesData = $this->clientesDAO->readAllClients();
-        $clientesDTOs = [];
-        foreach ($clientesData as $clienteData) {
-            $clientesDTOs[] = $this->mapToDTO($clienteData);
-        }
-        return $clientesDTOs;
+    public function readAllClients() {
+        $sql = "SELECT * FROM clientes";
+        $stmt = $this->pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Actualizar un cliente
-    public function updateCliente($id, $name, $lastname) {
-        return $this->clientesDAO->updateClient($id, $name, $lastname);
+    // Actualizar un cliente existente
+    public function updateClient($id, $name, $lastname) {
+        $sql = "UPDATE clientes SET name = :name, lastname = :lastname WHERE idCliente = :idCliente";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':idCliente', $id, PDO::PARAM_INT);
+        $stmt->bindParam(':name', $name);
+        $stmt->bindParam(':lastname', $lastname);
+        return $stmt->execute();
     }
 
-    // Eliminar un cliente
-    public function deleteCliente($id) {
-
+    // Eliminar un cliente por ID
+    public function deleteClient($id) {
+        $sql = "DELETE FROM clientes WHERE idCliente = :idCliente";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':idCliente', $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+}
+?>
